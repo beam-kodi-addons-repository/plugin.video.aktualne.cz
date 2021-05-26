@@ -39,7 +39,7 @@ def get_list():
     show_id = plugin.args['show_id'][0] if 'show_id' in plugin.args else ''
     page = int(plugin.args['page'][0] if 'page' in plugin.args else 0)
     category = int(plugin.args['category'][0] if 'category' in plugin.args else 0)
-    url = _baseurl+'rss{0}?offset={1}'.format(show_id, page)
+    url = _baseurl+'rss{0}/?offset={1}'.format(show_id, page)
     listing = []
     count = 0
     root = ET.fromstring(get_page(url))
@@ -82,7 +82,7 @@ def get_video(show_url):
     soup = BeautifulSoup(get_page(show_url), 'html.parser')
     if soup.find('div', {'class':'embed-player'}):
         soup = BeautifulSoup(get_page(soup.find('div', {'class':'embed-player'}).find('a')['href']), 'html.parser')
-    data = json.loads(re.search(r'BBXPlayer.setup\(\s+(.*)', soup.get_text().encode('utf-8')).group(1))
+    data = json.loads(re.compile(r'BBXPlayer.setup\(\s+(.*)').findall(str(soup))[0])
     try:
         stream_url = data['plugins']['liveStarter']['tracks']['HLS'][0]['src']
     except:
